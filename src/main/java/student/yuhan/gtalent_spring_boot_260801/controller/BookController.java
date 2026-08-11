@@ -31,6 +31,21 @@ public class BookController {
         return repository.findAll();
     }
 
+    // 取得單一書籍By Id
+    @GetMapping("/searchid/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Book getOneById(@PathVariable Long id) {
+        Book book = repository.findOneById(id);
+        return book;
+    }
+
+    // 取得單一書籍By Name
+    @GetMapping("/searchname/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public Book getOneById(@PathVariable String name) {
+        Book book = repository.findOneByName(name);
+        return book;
+    }
 
     // 新增一本書籍
     @PostMapping
@@ -48,5 +63,13 @@ public class BookController {
         Book book = new Book(request.getName(), request.getPrice());
         repository.update(id, book);
         return new ApiResponse("修改書籍成功");
+    }
+
+    // 軟刪除一本書籍
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse delete(@PathVariable Long id) {
+        repository.delete(id);
+        return new ApiResponse("刪除書籍成功");
     }
 }
