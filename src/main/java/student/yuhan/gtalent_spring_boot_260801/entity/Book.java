@@ -18,9 +18,9 @@ public class Book {
     @Column(nullable = false)
     private Integer price;
 
-    // 1: 代表存在  0: 代表刪除
+    // 1: 代表存在 0: 代表刪除
     @Column(nullable = false)
-    private Byte status=1;
+    private Byte status = 1;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -31,8 +31,8 @@ public class Book {
     }
 
     public Book(String name, Integer price) {
-        this.name   = name;
-        this.price  = price;
+        this.name = name;
+        this.price = price;
     }
 
     public Long getId() {
