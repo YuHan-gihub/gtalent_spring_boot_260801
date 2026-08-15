@@ -136,7 +136,9 @@ public class BookRepositoryImpl implements BookRepository {
             existingBook.setPrice(book.getPrice());
             // 交易成功 所以用commit 提交交易，將資料寫入資料庫。
             transactionManager.commit(status);
-            return book;
+            // 改寫步驟 17：回傳真正被更新的 existingBook。
+            // 原因：輸入的 book 沒有資料庫 ID；回傳 existingBook 才能讓修改通知帶入正確 ID 與更新後欄位。
+            return existingBook;
         } catch (ResourceNotFoundException exception) {
             // 失敗 rollback：只要 update 過程出錯，就把這次 transaction 做過的資料庫操作取消。
             transactionManager.rollback(status);
@@ -155,7 +157,9 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    // 改寫步驟 18：將刪除方法回傳型別改為 Book。
+    // 原因：軟刪除成功後需把該筆資料交回控制器，用於產生完整且可辨識的刪除通知。
+    public Book delete(Long id) {
         // 確保交易能夠成功 => 如果刪除書籍失敗，會回滾交易，避免資料庫出現不一致的狀態。
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         Byte off = 0;
@@ -174,6 +178,9 @@ public class BookRepositoryImpl implements BookRepository {
             existingBook.setDeletedAt(LocalDateTime.now());
             // 交易成功 所以用commit 提交交易，將資料寫入資料庫。
             transactionManager.commit(status);
+            // 改寫步驟 19：在提交成功後回傳被軟刪除的資料。
+            // 原因：通知僅能在交易已成功提交後寄出，且回傳物件保有刪除前的書名與價格。
+            return existingBook;
         } catch (ResourceNotFoundException exception) {
             // 失敗 rollback：只要 update 過程出錯，就把這次 transaction 做過的資料庫操作取消。
             transactionManager.rollback(status);

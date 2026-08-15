@@ -1,0 +1,11 @@
+# 專案文字檔統一使用 UTF-8，避免中文註解在不同編輯器中出現亂碼。
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+
+[*.java]
+indent_style = space
+indent_size = 2

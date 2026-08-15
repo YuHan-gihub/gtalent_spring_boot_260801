@@ -24,7 +24,8 @@ public interface BookRepository {
     // 修改一本書籍
     public Book update(Long id, Book book);
 
-    // 軟刪除一本書籍
-    public void delete(Long id);
+    // 改寫步驟 16：軟刪除後回傳被刪除的 Book，而非只回傳 void。
+    // 原因：刪除後控制器仍要在通知信中列出該書的 ID、書名與價格，不能只剩下傳入的 ID。
+    public Book delete(Long id);
 
 }
