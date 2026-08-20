@@ -13,11 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import student.yuhan.gtalent_spring_boot_260801.request.MemberPasswordUpdateRequest;
-// import student.ed.gtalent_spring_boot_260801.request.MemberProfileUpdateRequest;
+import student.yuhan.gtalent_spring_boot_260801.request.MemberProfileUpdateRequest;
 import student.yuhan.gtalent_spring_boot_260801.request.MemberRegisterRequest;
 import student.yuhan.gtalent_spring_boot_260801.response.ApiResponse;
 import student.yuhan.gtalent_spring_boot_260801.response.MemberResponse;
+import student.yuhan.gtalent_spring_boot_260801.response.TokenResponse;
 import student.yuhan.gtalent_spring_boot_260801.service.MemberService;
+
+import student.yuhan.gtalent_spring_boot_260801.request.MemberLoginRequest;
+import student.yuhan.gtalent_spring_boot_260801.request.TokenLogoutRequest;
+import student.yuhan.gtalent_spring_boot_260801.request.TokenRefreshRequest;
 
 @RestController
 @RequestMapping("/members")
@@ -44,14 +49,14 @@ public class MemberController {
 
   // 修改 name gender email
   // 有帶參數才修改, 沒帶就是維持原本
-  // @PutMapping("/{id}/profile")
-  // @ResponseStatus(HttpStatus.OK)
-  // public ApiResponse updateProfile(
-  // @PathVariable Long id,
-  // @Valid @RequestBody MemberProfileUpdateRequest request) {
-  // memberService.updateProfile(id, request);
-  // return new ApiResponse("會員基本資料修改成功");
-  // }
+  @PutMapping("/{id}/profile")
+  @ResponseStatus(HttpStatus.OK)
+  public ApiResponse updateProfile(
+      @PathVariable Long id,
+      @Valid @RequestBody MemberProfileUpdateRequest request) {
+    memberService.updateProfile(id, request);
+    return new ApiResponse("會員基本資料修改成功");
+  }
 
   @PutMapping("/{id}/password")
   @ResponseStatus(HttpStatus.OK)
@@ -62,10 +67,32 @@ public class MemberController {
     return new ApiResponse("會員密碼修改成功");
   }
 
-  // @DeleteMapping("/{id}")
-  // @ResponseStatus(HttpStatus.OK)
-  // public ApiResponse delete(@PathVariable Long id) {
-  // memberService.delete(id);
-  // return new ApiResponse("會員帳號刪除成功");
-  // }
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public ApiResponse delete(@PathVariable Long id) {
+    memberService.delete(id);
+    return new ApiResponse("會員帳號刪除成功");
+  }
+
+  @PostMapping("/login")
+  @ResponseStatus(HttpStatus.OK)
+  public TokenResponse login(@Valid @RequestBody MemberLoginRequest request) {
+    return memberService.login(request);
+  }
+
+  @PostMapping("/refresh")
+  @ResponseStatus(HttpStatus.OK)
+  public TokenResponse refresh(@Valid @RequestBody TokenRefreshRequest request) {
+    return memberService.refresh(request.getRefreshToken());
+  }
+
+  @PostMapping("/logout")
+  @ResponseStatus(HttpStatus.OK)
+  public ApiResponse logout(@Valid @RequestBody TokenLogoutRequest request) {
+    memberService.logout(request.getRefreshToken());
+    return new ApiResponse("會員登出成功");
+  }
+
+  // 課後練習:
+  // 1. get members 取得所有會員 且 做分頁功能
 }

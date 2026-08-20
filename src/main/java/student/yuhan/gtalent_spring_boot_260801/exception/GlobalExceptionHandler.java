@@ -22,7 +22,8 @@ import java.util.TreeMap;
 public class GlobalExceptionHandler {
 
     // 處理 @Valid 驗證失敗，把欄位錯誤訊息合併成統一的 message。
-    // 例如 BookCreateRequest 的 name 或 price 不合法時，Spring 會丟 MethodArgumentNotValidException。
+    // 例如 BookCreateRequest 的 name 或 price 不合法時，Spring 會丟
+    // MethodArgumentNotValidException。
     @ExceptionHandler(MethodArgumentNotValidException.class)
     // request 格式正確，但是欄位內容不符合規則，所以回 422。
     @ResponseStatus(HttpStatus.UNPROCESSABLE_CONTENT)
@@ -44,7 +45,8 @@ public class GlobalExceptionHandler {
     }
 
     // 處理資料庫 constraint 或寫入失敗，這類已進到資料層的錯誤回傳 400。
-    // 例如 repository.save(book) 時違反資料庫限制，Spring 可能會丟 DataIntegrityViolationException。
+    // 例如 repository.save(book) 時違反資料庫限制，Spring 可能會丟
+    // DataIntegrityViolationException。
     @ExceptionHandler(DataIntegrityViolationException.class)
     // 這類錯誤代表資料無法寫入資料庫，所以回 400。
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -92,5 +94,14 @@ public class GlobalExceptionHandler {
         return new ApiResponse(message, errors);
     }
 
+    // 處理Auth錯誤。
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiResponse handleAuthException(AuthException exception) {
+        Map<String, String> errors = new TreeMap<>();
+        errors.put(exception.getErrorKey(), ResponseMessages.getMessage(exception.getMessageCode()));
+
+        return new ApiResponse(ResponseMessages.getMessage(exception.getMessageCode()), errors);
+    }
 
 }

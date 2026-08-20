@@ -1,0 +1,14 @@
+package student.yuhan.gtalent_spring_boot_260801.request;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+import student.yuhan.gtalent_spring_boot_260801.constant.ResponseMessages;
+
+@Getter
+@Setter
+public class TokenRefreshRequest {
+
+  @NotBlank(message = ResponseMessages.REFRESH_TOKEN_REQUIRED)
+  private String refreshToken;
+}
