@@ -1,6 +1,8 @@
 package student.yuhan.gtalent_spring_boot_260801.controller;
 
 import student.yuhan.gtalent_spring_boot_260801.entity.Book;
+import student.yuhan.gtalent_spring_boot_260801.constant.OrderStatus;
+import student.yuhan.gtalent_spring_boot_260801.repository.BookOrderRepository;
 import student.yuhan.gtalent_spring_boot_260801.repository.BookRepository;
 // 改寫步驟 1：匯入 MailService，讓書籍 API 可在資料庫操作成功後呼叫寄信功能。
 // 原因：通知屬於書籍新增、修改、刪除流程的一部分，控制器需要能協調這兩項工作。
@@ -27,12 +29,14 @@ public class BookController {
 
     // 改寫步驟 2：保留一份 MailService 參考，專門處理 Gmail 通知。
     // 原因：控制器只決定「何時」通知；信件組裝與 SMTP 傳送仍集中在 MailService，避免重複程式碼。
+    private final BookOrderRepository bookOrderRepository;
     private final MailService mailService;
 
     // 改寫步驟 3：使用建構子注入 Repository 與 MailService。
     // 原因：Spring 建立 BookController 時會提供這兩個已管理的 Bean，測試時也能輕易替換成 mock 物件。
-    public BookController(BookRepository repository, MailService mailService) {
+    public BookController(BookRepository repository, BookOrderRepository bookOrderRepository, MailService mailService) {
         this.repository = repository;
+        this.bookOrderRepository = bookOrderRepository;
         this.mailService = mailService;
     }
 
@@ -66,12 +70,24 @@ public class BookController {
         // 的 DTO。
         // toList()：把轉換後的 BookResponse 收集回 List<BookResponse>。
         List<BookResponse> bookResponses = books.stream()
-                .map(BookResponse::new)
+                .map(book -> new BookResponse(book, getPurchaseStatus(book.getId())))
                 .toList();
 
         long totalElements = repository.countAll();
 
         return new PageResponse<>(bookResponses, page, size, totalElements);
+    }
+
+    private String getPurchaseStatus(Long bookId) {
+        if (bookOrderRepository.countByBookIdAndOrderStatus(bookId, OrderStatus.PAID) > 0) {
+            return OrderStatus.PAID;
+        }
+
+        if (bookOrderRepository.countByBookIdAndOrderStatus(bookId, OrderStatus.PENDING_PAYMENT) > 0) {
+            return OrderStatus.PENDING_PAYMENT;
+        }
+
+        return "AVAILABLE";
 
     }
 
