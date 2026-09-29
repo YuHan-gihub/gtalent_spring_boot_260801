@@ -1,0 +1,41 @@
+電腦打開終端機執行
+ssh-keygen -t ed25519 -C "github-actions-gtalent-deploy-1" -f "D:/aws/gtalent_actions_ed25519_26092201"
+打造 key(私鑰) & 孔(公鑰)
+
+
+在aws上修改 (貼上公鑰在後面行)
+nano authorized_keys
+
+
+修改私鑰權限 用最高權限powershell
+takeown /f "D:\aws\gtalent_actions_ed25519_26092201"
+icacls "D:\aws\gtalent_actions_ed25519_26092201" /reset
+icacls "D:\aws\gtalent_actions_ed25519_26092201" /grant:r "${env:USERNAME}:(R)"
+icacls "D:\aws\gtalent_actions_ed25519_26092201" /inheritance:r
+icacls "D:\aws\gtalent_actions_ed25519_26092201"
+
+測試是否能連線:
+用新創的key連線到aws
+ssh -i "D:\aws\gtalent_actions_ed25519_26092201" ubuntu@43.213.42.2
+
+
+無法連線 請用以下指令增加權限後再次連線
+takeown /f "D:\JAVA training\key\test46"
+
+icacls "D:\JAVA training\key\test46" /reset
+icacls "D:\JAVA training\key\test46" /grant:r "${env:USERNAME}:(R)"
+icacls "D:\JAVA training\key\test46" /inheritance:r
+icacls "D:\JAVA training\key\test46"
+
+
+ssh `
+  -o StrictHostKeyChecking=accept-new `
+  -o UserKnownHostsFile="D:\KEY\test46_ec2_known_hosts" `
+  -o KexAlgorithms=curve25519-sha256 `
+  -i "D:\JAVA training\key\test46" `
+  ubuntu@43.213.42.2 exit
+
+
+Get-Content "D:\KEY\test46_ec2_known_hosts"
+
+Get-Content "C:\test\test47"
