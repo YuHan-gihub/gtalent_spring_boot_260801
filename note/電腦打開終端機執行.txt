@@ -37,5 +37,3 @@ ssh `
 
 
 Get-Content "D:\KEY\test46_ec2_known_hosts"
-
-Get-Content "C:\test\test47"
